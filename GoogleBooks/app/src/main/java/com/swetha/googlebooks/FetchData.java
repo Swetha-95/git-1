@@ -7,11 +7,20 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.swetha.googlebooks.data.Item;
+import com.swetha.googlebooks.data.Source;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class FetchData extends AsyncTask<String, Void, String> {
 
@@ -30,7 +39,43 @@ public class FetchData extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         progressBar.setVisibility(View.INVISIBLE);
-        tv.setText(s);
+        tv.setText("");
+
+        //JSON Format
+        /* try {
+            JSONObject root = new JSONObject(s);
+            JSONArray items = root.getJSONArray("items");
+            for(int i=0; i<items.length();i++){
+                JSONObject it = items.getJSONObject(i);
+                JSONObject volumeInfo = it.getJSONObject("volumeInfo");
+                String title = volumeInfo.getString("title");
+                tv.append(title+" by ");
+                tv.append("\n");
+                JSONArray authorArray = volumeInfo.getJSONArray("authors");
+                for(int j =0; j<authorArray.length();j++){
+                    String authors = authorArray.getString(j);
+                    tv.append(authors+" ");
+                }
+                tv.append("\n\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        Gson gson = new Gson();
+        Source source = gson.fromJson(s, Source.class);
+        for (Item i : source.getItems()) {
+            String title = i.getVolumeInfo().getTitle();
+            tv.append(title);
+            List<String> authors = i.getVolumeInfo().getAuthors();
+            if (authors != null) {
+                tv.append(" by ");
+                for (String auth : authors) {
+                    tv.append(auth + " ");
+                }
+            }
+            tv.append("\n\n");
+        }
     }
 
     @Override
