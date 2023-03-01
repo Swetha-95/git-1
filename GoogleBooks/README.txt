@@ -10,3 +10,6 @@ https://jsonformatter.curiousconcept.com/#
 
 4) GSON Library
 https://github.com/google/gson
+
+5) Public APIs
+https://github.com/public-apis/public-apis
